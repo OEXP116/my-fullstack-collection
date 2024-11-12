@@ -1,116 +1,82 @@
-import { Bird, BirdData } from '../../models/birds'
+import { GameConsoleData } from '../../models/gameConsoles'
 import db from './connection'
 
-// Read - All
-export async function getAllBirds() {
-  const birds = await db('birds').select(
+
+export async function getAllGameConsoles() {
+  const consoles = await db('game_consoles').select(
     'id',
     'name',
-    'family',
-    'genus',
     'region',
+    'manufacturer',
+    'release_year as releaseYear',
     'color',
-    'population',
-    'bill_size as billSize',
-    'is_endangered as isEndangered',
-    'is_round as isRound',
+    'storage_capacity as storageCapacity',
+    'is_portable as isPortable',
+    'has_online_support as hasOnlineSupport',
+    'supported_resolutions as supportedResolutions',
+    'price'
   )
-  // console.log(birds)
-  return birds as Bird[]
+  return consoles as GameConsoleData[]
 }
 
-// Read - One
-export async function getBirdById(id: number) {
-  const bird = await db('birds')
+
+export async function getGameConsoleById(id: number) {
+  const console = await db('game_consoles')
     .where('id', id)
     .select(
       'id',
       'name',
-      'family',
-      'genus',
       'region',
+      'manufacturer',
+      'release_year as releaseYear',
       'color',
-      'population',
-      'bill_size as billSize',
-      'is_endangered as isEndangered',
-      'is_round as isRound',
+      'storage_capacity as storageCapacity',
+      'is_portable as isPortable',
+      'has_online_support as hasOnlineSupport',
+      'supported_resolutions as supportedResolutions',
+      'price'
     )
     .first()
-  // console.log(birds)
-  return bird as Bird
+  return console as GameConsoleData
 }
 
-// Create
-export async function addBird(bird: BirdData) {
-  const result = await db('birds').insert({
-    name: bird.name,
-    family: bird.family,
-    genus: bird.genus,
-    region: bird.region,
-    color: bird.color,
-    population: bird.population,
-    bill_size: bird.billSize,
-    is_endangered: bird.isEndangered,
-    is_round: bird.isRound,
+export async function addGameConsole(consoleData: GameConsoleData) {
+  const result = await db('game_consoles').insert({
+    name: consoleData.name,
+    region: consoleData.region,
+    manufacturer: consoleData.manufacturer,
+    release_year: consoleData.releaseYear,
+    color: consoleData.color,
+    storage_capacity: consoleData.storageCapacity,
+    is_portable: consoleData.isPortable,
+    has_online_support: consoleData.hasOnlineSupport,
+    supported_resolutions: consoleData.supportedResolutions,
+    price: consoleData.price
   })
-  // console.log(birds)
-  return result as number[]
+  return result[0] as number
 }
 
-export async function addBirdDestructure({
-  name,
-  family,
-  genus,
-  region,
-  color,
-  population,
-  billSize,
-  isEndangered,
-  isRound,
-}: BirdData) {
-  const result = await db('birds').insert({
-    name,
-    family,
-    genus,
-    region,
-    color,
-    population,
-    bill_size: billSize,
-    is_endangered: isEndangered,
-    is_round: isRound,
-  })
-  // console.log(birds)
-  return result as number[]
-}
 
-// Update
-// export async function updateBirdPopulationById(id number, bird: Bird){
-//   const result = await db('birds').update({
-//     population: bird.population
-//   })
-// }
-
-export async function updateBirdById(id: number, bird: Bird) {
-  const result = await db('birds')
+export async function updateGameConsoleById(id: number, consoleData: GameConsoleData) {
+  const result = await db('game_consoles')
     .update({
-      name: bird.name,
-      family: bird.family,
-      genus: bird.genus,
-      region: bird.region,
-      colour: bird.color,
-      population: bird.population,
-      bill_size: bird.billSize,
-      is_endangered: bird.isEndangered,
-      is_round: bird.isRound,
+      name: consoleData.name,
+      region: consoleData.region,
+      manufacturer: consoleData.manufacturer,
+      release_year: consoleData.releaseYear,
+      color: consoleData.color,
+      storage_capacity: consoleData.storageCapacity,
+      is_portable: consoleData.isPortable,
+      has_online_support: consoleData.hasOnlineSupport,
+      supported_resolutions: consoleData.supportedResolutions,
+      price: consoleData.price
     })
     .where('id', id)
-  // console.log(birds)
-  return result as number
+  return result
 }
 
-// Delete
-export async function deleteBirdById(id: number) {
-  const result = await db('birds').where('id', id).delete()
-  // console.log(birds)
-  return result as number
+
+export async function deleteGameConsoleById(id: number) {
+  const result = await db('game_consoles').where('id', id).delete()
+  return result
 }
