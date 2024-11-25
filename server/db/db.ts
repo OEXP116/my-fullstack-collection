@@ -1,4 +1,4 @@
-import { GameConsoleData } from '../../models/gameConsoles'
+import { GameConsoleData } from '../../models/consoles'
 import db from './connection'
 
 
@@ -40,21 +40,27 @@ export async function getGameConsoleById(id: number) {
   return console as GameConsoleData
 }
 
-export async function addGameConsole(consoleData: GameConsoleData) {
-  const result = await db('game_consoles').insert({
-    name: consoleData.name,
-    region: consoleData.region,
-    manufacturer: consoleData.manufacturer,
-    release_year: consoleData.releaseYear,
-    color: consoleData.color,
-    storage_capacity: consoleData.storageCapacity,
-    is_portable: consoleData.isPortable,
-    has_online_support: consoleData.hasOnlineSupport,
-    supported_resolutions: consoleData.supportedResolutions,
-    price: consoleData.price
-  })
-  return result[0] as number
+// export async function addGameConsole(consoleData: GameConsoleData) {
+//   const result = await db('game_consoles').insert({
+//     name: consoleData.name,
+//     region: consoleData.region,
+//     manufacturer: consoleData.manufacturer,
+//     release_year: consoleData.release_year,
+//     color: consoleData.color,
+//     storage_capacity: consoleData.storage_capacity,
+//     is_portable: consoleData.is_portable,
+//     has_online_support: consoleData.has_online_support,
+//     supported_resolutions: consoleData.supported_resolutions,
+//     price: consoleData.price
+//   })
+//   return result[0] as number
+// }
+
+export async function addGameConsole(consoleData: GameConsoleData): Promise<number> {
+  const [id] = await db('game_consoles').insert(consoleData);
+  return id; // Returns the single ID
 }
+
 
 
 export async function updateGameConsoleById(id: number, consoleData: GameConsoleData) {
@@ -63,12 +69,12 @@ export async function updateGameConsoleById(id: number, consoleData: GameConsole
       name: consoleData.name,
       region: consoleData.region,
       manufacturer: consoleData.manufacturer,
-      release_year: consoleData.releaseYear,
+      release_year: consoleData.release_year,
       color: consoleData.color,
-      storage_capacity: consoleData.storageCapacity,
-      is_portable: consoleData.isPortable,
-      has_online_support: consoleData.hasOnlineSupport,
-      supported_resolutions: consoleData.supportedResolutions,
+      storage_capacity: consoleData.storage_capacity,
+      is_portable: consoleData.is_portable,
+      has_online_support: consoleData.has_online_support,
+      supported_resolutions: consoleData.supported_resolutions,
       price: consoleData.price
     })
     .where('id', id)

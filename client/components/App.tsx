@@ -1,16 +1,16 @@
-import BirdsList from './BirdsList'
+import ConsolesList from './ConsolesList';
 
 function App() {
   return (
     <>
       <header className="header">
-        <h1>My Collection</h1>
+        <h1>Game Console Collection</h1>
       </header>
       <section className="main">
-        <BirdsList />
+        <ConsolesList />
       </section>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
