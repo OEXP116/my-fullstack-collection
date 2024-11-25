@@ -8,12 +8,8 @@ export async function getAllGameConsoles() {
     'name',
     'region',
     'manufacturer',
-    'release_year as releaseYear',
+    'release_year',
     'color',
-    'storage_capacity as storageCapacity',
-    'is_portable as isPortable',
-    'has_online_support as hasOnlineSupport',
-    'supported_resolutions as supportedResolutions',
     'price'
   )
   return consoles as GameConsoleData[]
@@ -28,12 +24,8 @@ export async function getGameConsoleById(id: number) {
       'name',
       'region',
       'manufacturer',
-      'release_year as releaseYear',
+      'release_year',
       'color',
-      'storage_capacity as storageCapacity',
-      'is_portable as isPortable',
-      'has_online_support as hasOnlineSupport',
-      'supported_resolutions as supportedResolutions',
       'price'
     )
     .first()
@@ -71,10 +63,6 @@ export async function updateGameConsoleById(id: number, consoleData: GameConsole
       manufacturer: consoleData.manufacturer,
       release_year: consoleData.release_year,
       color: consoleData.color,
-      storage_capacity: consoleData.storage_capacity,
-      is_portable: consoleData.is_portable,
-      has_online_support: consoleData.has_online_support,
-      supported_resolutions: consoleData.supported_resolutions,
       price: consoleData.price
     })
     .where('id', id)

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchAllConsoles,
@@ -10,6 +10,7 @@ import { GameConsole } from '../../models/consoles';
 
 function ConsolesList() {
   const queryClient = useQueryClient();
+
   const { data: consoles, error, isLoading } = useQuery<GameConsole[]>({
     queryKey: ['consoles'],
     queryFn: fetchAllConsoles,
@@ -18,64 +19,54 @@ function ConsolesList() {
   const [formData, setFormData] = useState<Omit<GameConsole, 'id'>>({
     name: '',
     manufacturer: '',
-    release_year: undefined,
+    release_year: '', 
     region: '',
     color: '',
-    storage_capacity: undefined,
-    is_portable: false,
-    has_online_support: false,
-    supported_resolutions: [],
-    price: undefined,
+    price: 0.00, 
   });
   const [editingConsoleId, setEditingConsoleId] = useState<number | null>(null);
 
-  const addConsoleMutation = useMutation<number, Error, Omit<GameConsole, 'id'>>({
-    mutationFn: (consoleData) => addConsole(consoleData),
+  const addConsoleMutation = useMutation({
+    mutationFn: addConsole,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['consoles'] });
-      setFormData({
-        name: '',
-        manufacturer: '',
-        release_year: undefined,
-        region: '',
-        color: '',
-        storage_capacity: undefined,
-        is_portable: false,
-        has_online_support: false,
-        supported_resolutions: [],
-        price: undefined,
-      });
+      queryClient.invalidateQueries(['consoles']);
+      resetFormData();
     },
   });
 
-  const updateConsoleMutation = useMutation<void, Error, GameConsole>({
-    mutationFn: (console) => updateConsole(console.id, console),
+  const updateConsoleMutation = useMutation({
+    mutationFn: (console: GameConsole) => updateConsole(console.id, console),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['consoles'] });
-      setFormData({
-        name: '',
-        manufacturer: '',
-        release_year: undefined,
-        region: '',
-        color: '',
-        storage_capacity: undefined,
-        is_portable: false,
-        has_online_support: false,
-        supported_resolutions: [],
-        price: undefined,
-      });
+      queryClient.invalidateQueries(['consoles']);
+      resetFormData();
       setEditingConsoleId(null);
     },
   });
 
-  const deleteConsoleMutation = useMutation<void, Error, number>({
-    mutationFn: (id) => deleteConsole(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['consoles'] }),
+  const deleteConsoleMutation = useMutation({
+    mutationFn: deleteConsole,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['consoles']);
+    },
   });
+
+  const resetFormData = () => {
+    setFormData({
+      name: '',
+      manufacturer: '',
+      release_year: '',
+      region: '',
+      color: '',
+      price: 0.00,
+    });
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -87,9 +78,17 @@ function ConsolesList() {
     }
   };
 
-  const handleEditClick = (console: GameConsole) => {
-    setEditingConsoleId(console.id);
-    setFormData(console);
+  const handleEditClick = (gameConsole: GameConsole) => {
+    setEditingConsoleId(gameConsole.id);
+    setFormData({
+      name: gameConsole.name,
+      manufacturer: gameConsole.manufacturer,
+      release_year: gameConsole.release_year ?? '',
+      region: gameConsole.region,
+      color: gameConsole.color,
+      price: gameConsole.price ?? 0.00
+    });
+    console.log(gameConsole.release_year)
   };
 
   const handleDeleteClick = (id: number) => {
@@ -97,7 +96,7 @@ function ConsolesList() {
   };
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Failed to load consoles</p>;
+  if (error) return <p>Error loading consoles.</p>;
 
   return (
     <div>
@@ -106,7 +105,7 @@ function ConsolesList() {
         {consoles?.map((console) => (
           <li key={console.id}>
             {console.name} ({console.manufacturer})
-            <button onClick={() => handleEditClick(console)}>Update</button>
+            <button onClick={() => handleEditClick(console)}>Edit</button>
             <button onClick={() => handleDeleteClick(console.id)}>Delete</button>
           </li>
         ))}
@@ -124,7 +123,58 @@ function ConsolesList() {
             required
           />
         </label>
-        {/* Add more form fields for other properties */}
+        <br />
+        <label>
+          Manufacturer:
+          <input
+            type="text"
+            name="manufacturer"
+            value={formData.manufacturer}
+            onChange={handleInputChange}
+          />
+        </label>
+        <br />
+        <label>
+          Release Year:
+          <input
+            type="text"
+            name="release_year"
+            value={formData.release_year}
+            onChange={handleInputChange}
+          />
+        </label>
+        <br />
+        <label>
+          Region:
+          <input
+            type="text"
+            name="region"
+            value={formData.region}
+            onChange={handleInputChange}
+          />
+        </label>
+        <br />
+        <label>
+          Color:
+          <input
+            type="text"
+            name="color"
+            value={formData.color}
+            onChange={handleInputChange}
+          />
+        </label>
+        
+        <br />
+        <label>
+          Price (USD):
+          <input
+            type="text"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+          />
+        </label>
+        <br />
         <button type="submit">{editingConsoleId ? 'Update Console' : 'Add Console'}</button>
         {editingConsoleId && (
           <button type="button" onClick={() => setEditingConsoleId(null)}>
