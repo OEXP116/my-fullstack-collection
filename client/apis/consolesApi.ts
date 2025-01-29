@@ -2,6 +2,7 @@ import { GameConsole } from '../../models/consoles';
 
 const BASE_URL = '/api/consoles';
 
+
 export async function fetchAllConsoles(): Promise<GameConsole[]> {
   const response = await fetch(BASE_URL);
   if (!response.ok) throw new Error('Failed to fetch consoles');

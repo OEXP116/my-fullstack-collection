@@ -13,7 +13,14 @@ function ConsolesList() {
 
   const { data: consoles, error, isLoading } = useQuery<GameConsole[]>({
     queryKey: ['consoles'],
-    queryFn: fetchAllConsoles,
+    queryFn: async () => {
+      try {
+        return await fetchAllConsoles();
+      } catch (err) {
+        console.error('Error fetching consoles:', err);
+        throw err; // Ensure error is propagated to `useQuery`
+      }
+    },
   });
 
   const [formData, setFormData] = useState<Omit<GameConsole, 'id'>>({
